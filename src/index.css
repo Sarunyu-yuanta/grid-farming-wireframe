@@ -1,0 +1,144 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&display=swap");
+
+:root {
+  --primary-action: #185fa5;
+  --primary-action-hover: #124d88;
+  --primary-action-active: #0d3d6b;
+  --primary-action-light: color-mix(in srgb, #185fa5 12%, transparent);
+  --primary-action-muted: color-mix(in srgb, #185fa5 18%, transparent);
+
+  --font-sans: "Noto Sans Thai", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans), sans-serif;
+  background-color: var(--bg-default, #f5f5f0);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* NavHeader menu buttons use native <button> — reset browser chrome */
+header nav button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+}
+
+/* Portfolio service cards — Figma Elevation/3db */
+.service-menu-card {
+  box-shadow:
+    0 0 2px rgba(102, 102, 102, 0.16),
+    0 4px 8px rgba(102, 102, 102, 0.12);
+  border: 0;
+}
+
+.service-menu-card--robo {
+  background: linear-gradient(to right, #ffffff, #c7e8f3);
+}
+
+.service-menu-card--definit {
+  background: linear-gradient(to right, #ffffff, #7eabe2);
+}
+
+.service-menu-card--grid-farming {
+  background: linear-gradient(to right, #ffffff, #d4ebe0);
+}
+
+/* Portfolio bottom sheet — Figma spacing (gap 10px intro→cards) */
+.portfolio-planning-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+/* two-column layout for New Farm form */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+  .two-col .col-right {
+    order: -1;
+  }
+}
+
+/* form row */
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    flex-direction: column;
+  }
+}
+
+/* metrics grid */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 600px) {
+  .metrics-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* farm chips scroll on mobile */
+.farm-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (max-width: 900px) {
+  .farm-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+}
+
+/* hide text labels in navbar on mobile */
+@media (max-width: 900px) {
+  .hide-mobile {
+    display: none;
+  }
+}
+
+/* pl color helpers */
+.pl-positive {
+  color: #0f6e56;
+}
+.pl-negative {
+  color: #993c1d;
+}
+.pl-amber {
+  color: #ba7517;
+}

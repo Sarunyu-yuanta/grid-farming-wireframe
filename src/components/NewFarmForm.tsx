@@ -175,9 +175,14 @@ export default function NewFarmForm({ onCancel, onSubmit, initialConfig }: Props
                   <div className="flex items-center gap-1 mb-1">
                     <span className="type-subtitle-1 text-foreground">Profit Spread (บาท)</span>
                     <InfoTooltip content="ส่วนต่างกำไรต่อรอบ — ยิ่งน้อย ระบบจบเร็วแต่กำไรต่อรอบน้อยลง" />
+                    {hasValidRange && (
+                      <span className="type-caption text-muted-foreground ml-1">
+                        (ต้องน้อยกว่า ฿{formatNumber(numMax - numMin, 0)})
+                      </span>
+                    )}
                   </div>
                   <Input
-                    placeholder="0.00"
+                    placeholder="เช่น 5"
                     type="number"
                     unit="฿"
                     value={config.spread === "" ? "" : String(config.spread)}
@@ -405,7 +410,6 @@ export default function NewFarmForm({ onCancel, onSubmit, initialConfig }: Props
                   variant={canSubmit ? "primary" : "disabled"}
                   size="lg"
                   onClick={handleSubmit}
-                  disabled={!canSubmit}
                 >
                   เริ่มฟาร์ม
                 </Button>

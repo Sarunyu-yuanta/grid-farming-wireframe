@@ -17,6 +17,53 @@ import FarmingMainPage from "./components/FarmingMainPage";
 import NewFarmForm from "./components/NewFarmForm";
 import FarmDetail from "./components/FarmDetail";
 
+const DEMO_FARMS: Farm[] = [
+  {
+    id: "farm-demo-001",
+    ticker: "PTT",
+    status: "active",
+    priceMin: 30,
+    priceMax: 50,
+    spread: 2,
+    commission: 0.15,
+    mode: "volume",
+    volumePerLevel: 100,
+    valuePerLevel: 0,
+    capital: 55000,
+    marketPrice: 42,
+    shares: 800,
+    cash: 25000,
+    costPerShare: 30,
+    plToday: 640,
+    plTotal: 3600,
+    sharesForSale: 200,
+    sharesBidding: 100,
+    createdAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000),
+  },
+  {
+    id: "farm-demo-002",
+    ticker: "AOT",
+    status: "active",
+    priceMin: 55,
+    priceMax: 75,
+    spread: 3,
+    commission: 0.15,
+    mode: "value",
+    volumePerLevel: 0,
+    valuePerLevel: 15000,
+    capital: 80000,
+    marketPrice: 51,
+    shares: 600,
+    cash: 24000,
+    costPerShare: 62,
+    plToday: -450,
+    plTotal: -2100,
+    sharesForSale: 0,
+    sharesBidding: 300,
+    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+  },
+];
+
 type NavId = "portfolio" | "farming" | "history" | "settings";
 
 const NAV_ITEMS: { id: NavId; label: string }[] = [
@@ -44,7 +91,7 @@ export default function App() {
   const [activeNav, setActiveNav] = useState<NavId>("farming");
   const [bottomTab, setBottomTab] = useState<NavBottomTabId>("asset");
   const [view, setView] = useState<AppView>("asset-menu");
-  const [farms, setFarms] = useState<Farm[]>([]);
+  const [farms, setFarms] = useState<Farm[]>(DEMO_FARMS);
   const [selectedFarmId, setSelectedFarmId] = useState<string | null>(null);
 
   const selectedFarm = farms.find((f) => f.id === selectedFarmId) ?? null;

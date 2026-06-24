@@ -1,5 +1,4 @@
-import type { ReactNode } from "react";
-import { Button, Card, StatusTag, Tag, Alert } from "@sarunyu/system-one";
+import { Button, Card, StatusTag, Tag } from "@sarunyu/system-one";
 import { Plant, Plus, Clock } from "@phosphor-icons/react";
 import type { Farm } from "../types";
 import { calcPL, formatCurrency, formatNumber } from "../utils";
@@ -143,6 +142,13 @@ function FarmCard({
   const plPositive = pl >= 0;
   const outOfRange =
     farm.marketPrice < farm.priceMin || farm.marketPrice > farm.priceMax;
+  const inRange = !outOfRange;
+
+  const rangeSize = farm.priceMax - farm.priceMin;
+  const pricePosition =
+    rangeSize > 0
+      ? Math.max(0, Math.min(1, (farm.marketPrice - farm.priceMin) / rangeSize))
+      : 0;
 
   const runtimeDays = Math.floor(
     (Date.now() - farm.createdAt.getTime()) / (1000 * 60 * 60 * 24)
@@ -163,88 +169,67 @@ function FarmCard({
         : "ปิดแล้ว";
 
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
       onClick={onClick}
-      className={[
-        "text-left w-full rounded-lg transition-shadow",
-        selected ? "ring-2 ring-primary-action shadow-md" : "hover:shadow-sm",
-      ].join(" ")}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onClick(); }}
     >
-      <Card size="desktop">
-        <div className="flex flex-col gap-4">
-          {/* Top row */}
+      <Card size="desktop" className="farm-card">
+        <div className="flex flex-col gap-3">
+          {/* Top row: ticker + status / PnL% + market price */}
           <div className="flex items-start justify-between gap-2">
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5">
               <div className="flex items-center gap-2">
                 <span className="type-h6 text-foreground">{farm.ticker}</span>
                 <Tag text="Spot Grid" variant="gray" size="small" />
               </div>
               <StatusTag type={statusType} text={statusText} />
             </div>
-
-            <Tag
-              text={`${plPositive ? "+" : ""}${formatNumber(plPct, 2)}%`}
-              variant={plPositive ? "green" : "red"}
-              size="small"
-              icon
-            />
+            <div className="flex flex-col items-end gap-1">
+              <Tag
+                text={`${plPositive ? "▲" : "▼"} ${plPositive ? "+" : ""}${formatNumber(plPct, 2)}%`}
+                variant={plPositive ? "green" : "red"}
+                size="small"
+              />
+              <span className="type-caption text-muted-foreground">
+                ฿{formatNumber(farm.marketPrice)}
+              </span>
+            </div>
           </div>
 
-          {/* P/L */}
+          {/* P/L absolute */}
           <div className="flex flex-col gap-0.5">
             <span className="type-caption text-muted-foreground">กำไร/ขาดทุน</span>
-            <span
-              className={`type-subtitle-1 font-bold ${
-                plPositive ? "pl-positive" : "pl-negative"
-              }`}
-            >
-              {plPositive ? "+" : ""}
-              {formatCurrency(pl)}
+            <span className={`type-subtitle-1 font-bold ${plPositive ? "pl-positive" : "pl-negative"}`}>
+              {plPositive ? "+" : ""}{formatCurrency(pl)}
             </span>
           </div>
 
-          {/* Stats */}
-          <div className="border-t border-divider pt-3 flex flex-col gap-2">
-            <StatRow
-              label="Price Range"
-              value={`฿${formatNumber(farm.priceMin)} – ฿${formatNumber(farm.priceMax)}`}
-            />
-            <StatRow label="ทุนเริ่มต้น" value={formatCurrency(farm.capital)} />
-            <StatRow
-              label={
-                <span className="flex items-center gap-1">
-                  <Clock size={12} />
-                  Runtime
-                </span>
-              }
-              value={runtimeDays === 0 ? "วันนี้" : `${runtimeDays} วัน`}
-            />
+          {/* Mini grid range bar */}
+          <div className="flex flex-col gap-1">
+            <div className="grid-range-bar relative h-1 rounded-full overflow-visible">
+              <div
+                className={`absolute top-1/2 -translate-y-1/2 w-0.5 h-3.5 rounded-full ${inRange ? "bg-primary-action" : "bg-destructive"}`}
+                style={{ left: `calc(${pricePosition * 100}% - 1px)` }}
+              />
+            </div>
+            <div className="flex justify-between type-caption text-muted-foreground">
+              <span>฿{formatNumber(farm.priceMin)}</span>
+              <span>฿{formatNumber(farm.priceMax)}</span>
+            </div>
           </div>
 
-          {outOfRange && farm.status === "active" && (
-            <Alert
-              status="warning"
-              message="ราคาออกนอก Grid Range"
-            />
-          )}
+          {/* Bottom: runtime + capital */}
+          <div className="border-t border-divider pt-2.5 flex justify-between type-caption">
+            <span className="text-muted-foreground flex items-center gap-1">
+              <Clock size={12} />
+              {runtimeDays === 0 ? "วันนี้" : `${runtimeDays} วัน`}
+            </span>
+            <span className="text-muted-foreground">{formatCurrency(farm.capital)}</span>
+          </div>
         </div>
       </Card>
-    </button>
-  );
-}
-
-function StatRow({
-  label,
-  value,
-}: {
-  label: ReactNode;
-  value: string;
-}) {
-  return (
-    <div className="flex justify-between type-caption">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="text-foreground font-medium">{value}</span>
     </div>
   );
 }

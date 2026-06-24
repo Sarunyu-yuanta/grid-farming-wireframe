@@ -1,4 +1,4 @@
-import { BottomSheet, Button } from "@sarunyu/system-one";
+import { BottomSheet } from "@sarunyu/system-one";
 import PortfolioPlanningContent from "./PortfolioPlanningContent";
 
 interface Props {
@@ -36,14 +36,14 @@ export default function PortfolioPlanningSheet({
           <p className="min-w-0 flex-1 truncate text-[18px] font-bold leading-normal text-foreground">
             บริการวางแผนพอร์ต
           </p>
-          <Button
-            variant="plain"
-            size="md"
-            className="shrink-0 text-base font-bold"
+          <button
+            type="button"
+            className="shrink-0 border-0 bg-transparent p-0 text-base font-bold cursor-pointer"
+            style={{ color: '#0a6ee7' }}
             onClick={() => onOpenChange(false)}
           >
             ปิด
-          </Button>
+          </button>
         </div>
       </div>
       <div className="bg-background px-4 pb-20 pt-4">

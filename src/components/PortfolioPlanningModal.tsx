@@ -39,7 +39,9 @@ export default function PortfolioPlanningModal({
           title="บริการวางแผนพอร์ต"
           onClose={() => onOpenChange(false)}
         >
-          <PortfolioPlanningContent onSelectGridFarming={handleGridFarming} />
+          <div className="mt-2 mb-4">
+            <PortfolioPlanningContent onSelectGridFarming={handleGridFarming} gap={16} />
+          </div>
         </Modal>
       </div>
     </div>

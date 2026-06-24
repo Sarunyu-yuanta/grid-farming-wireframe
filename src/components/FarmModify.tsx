@@ -235,7 +235,6 @@ export default function FarmModify({ farm, onUpdate, onClose }: Props) {
             variant={valid && modifyConsent ? "primary" : "disabled"}
             size="lg"
             onClick={handleModify}
-            disabled={!valid || !modifyConsent}
           >
             ปรับปรุงฟาร์ม
           </Button>

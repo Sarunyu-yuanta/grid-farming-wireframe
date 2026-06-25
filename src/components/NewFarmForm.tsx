@@ -6,12 +6,35 @@ import {
   Alert,
   Card,
   Chip,
+  Dropdown,
   NavSubHeader,
-  PageContainer,
   Tag,
   ListItem,
 } from "@sarunyu/system-one";
-import { CaretDown, CaretUp } from "@phosphor-icons/react";
+
+const STOCK_OPTIONS = [
+  { value: "PTT",   label: "PTT - บมจ. ปตท." },
+  { value: "AOT",   label: "AOT - บมจ. ท่าอากาศยานไทย" },
+  { value: "ADVANC", label: "ADVANC - บมจ. แอดวานซ์ อินโฟร์ เซอร์วิส" },
+  { value: "CPALL", label: "CPALL - บมจ. ซีพี ออลล์" },
+  { value: "SCB",   label: "SCB - บมจ. ไทยพาณิชย์" },
+  { value: "KBANK", label: "KBANK - บมจ. กสิกรไทย" },
+  { value: "BBL",   label: "BBL - บมจ. กรุงเทพ" },
+  { value: "KTB",   label: "KTB - บมจ. กรุงไทย" },
+  { value: "BAM",   label: "BAM - บมจ. บริหารสินทรัพย์กรุงเทพพาณิชย์" },
+  { value: "SCC",   label: "SCC - บมจ. ปูนซิเมนต์ไทย" },
+  { value: "GULF",  label: "GULF - บมจ. กัลฟ์ เอ็นเนอร์จี ดีเวลลอปเมนท์" },
+  { value: "DELTA", label: "DELTA - บมจ. เดลต้า อีเลคโทรนิคส์" },
+  { value: "TRUE",  label: "TRUE - บมจ. ทรู คอร์ปอเรชั่น" },
+  { value: "MINT",  label: "MINT - บมจ. ไมเนอร์ อินเตอร์เนชั่นแนล" },
+  { value: "BH",    label: "BH - บมจ. โรงพยาบาลบำรุงราษฎร์" },
+  { value: "BDMS",  label: "BDMS - บมจ. กรุงเทพดุสิตเวชการ" },
+  { value: "CPF",   label: "CPF - บมจ. เจริญโภคภัณฑ์อาหาร" },
+  { value: "IVL",   label: "IVL - บมจ. อินโดรามา เวนเจอร์ส" },
+  { value: "PTTGC", label: "PTTGC - บมจ. พีทีที โกลบอล เคมิคอล" },
+  { value: "TOP",   label: "TOP - บมจ. ไทยออยล์" },
+];
+import { CaretDown, CaretUp, X } from "@phosphor-icons/react";
 import InfoTooltip from "./InfoTooltip";
 import type { FarmConfig, Farm } from "../types";
 import {
@@ -30,6 +53,7 @@ interface Props {
   onCancel: () => void;
   onSubmit: (farm: Farm) => void;
   initialConfig?: Partial<FarmConfig>;
+  isModal?: boolean;
 }
 
 const DEFAULT_CONFIG: FarmConfig = {
@@ -48,7 +72,7 @@ function simulatedMarketPrice(min: number, max: number): number {
   return parseFloat(((min + max) / 2).toFixed(2));
 }
 
-export default function NewFarmForm({ onCancel, onSubmit, initialConfig }: Props) {
+export default function NewFarmForm({ onCancel, onSubmit, initialConfig, isModal = false }: Props) {
   const [config, setConfig] = useState<FarmConfig>({ ...DEFAULT_CONFIG, ...initialConfig });
   const [consent, setConsent] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -113,19 +137,29 @@ export default function NewFarmForm({ onCancel, onSubmit, initialConfig }: Props
 
   return (
     <>
-      <NavSubHeader title="สร้างฟาร์มใหม่" onBack={onCancel} />
+      {isModal ? (
+        <div className="flex items-center justify-between" style={{ padding: "20px 24px 0" }}>
+          <span style={{ fontSize: "18px", fontWeight: 700, color: "#101828" }}>สร้างฟาร์มใหม่</span>
+          <Button variant="plain-black" size="icon-sm" onClick={onCancel}>
+            <X size={20} />
+          </Button>
+        </div>
+      ) : (
+        <NavSubHeader title="สร้างฟาร์มใหม่" onBack={onCancel} />
+      )}
 
-      <PageContainer className="py-6 max-w-[1200px]">
-        <div className="two-col">
+      <div style={{ padding: isModal ? "24px" : "24px 80px", width: "100%", boxSizing: "border-box" }}>
+        <div className={isModal ? "modal-form-grid" : "two-col"} style={{ display: "grid", gap: "24px", alignItems: "start" }}>
           {/* LEFT — form */}
           <div className="col-left flex flex-col gap-4">
             <Card size="desktop">
-              <Input
+              <Dropdown
                 label="หุ้น (Ticker)"
-                placeholder="เช่น PTT, AOT"
+                placeholder="ค้นหาหรือเลือกหุ้น..."
+                options={STOCK_OPTIONS}
                 value={config.ticker}
-                onChange={(v) => set("ticker", v.toUpperCase())}
-                forceState={submitted && errors.ticker ? "error" : "default"}
+                onChange={(v) => set("ticker", v)}
+                forceState={submitted && errors.ticker ? "error" : undefined}
                 errorMessage={errors.ticker}
               />
             </Card>
@@ -314,7 +348,7 @@ export default function NewFarmForm({ onCancel, onSubmit, initialConfig }: Props
           </div>
 
           {/* RIGHT — summary */}
-          <div className="col-right flex flex-col gap-4">
+          <div className="col-right flex flex-col gap-4 modal-col-right">
             <Card size="desktop">
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between gap-2">
@@ -417,7 +451,7 @@ export default function NewFarmForm({ onCancel, onSubmit, initialConfig }: Props
             </Card>
           </div>
         </div>
-      </PageContainer>
+      </div>
     </>
   );
 }
@@ -478,6 +512,8 @@ function DetailRow({
     </div>
   );
 }
+
+
 
 function BacktestStat({
   label,

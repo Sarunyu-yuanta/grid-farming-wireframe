@@ -1,4 +1,4 @@
-import { Card, Tag } from "@sarunyu/system-one";
+import { Card } from "@sarunyu/system-one";
 import type { Farm } from "../types";
 import {
   calcPL,
@@ -239,13 +239,15 @@ function MetricCell({
           : "text-foreground";
 
   return (
-    <div className="flex flex-col gap-0.5 p-3 rounded bg-default-secondary">
+    <div className="flex flex-col gap-0.5 p-3 rounded bg-bg-default-tertiary">
       <span className="type-caption text-muted-foreground">{label}</span>
-      <span className={`type-subtitle-1 font-semibold ${colorClass}`}>
-        {prefix}
-        {value}
-      </span>
-      {sub && <span className="type-caption text-muted-foreground">{sub}</span>}
+      <div className="flex items-baseline justify-between gap-1">
+        <span className={`type-subtitle-1 font-semibold ${colorClass}`}>
+          {prefix}
+          {value}
+        </span>
+        {sub && <span className="type-caption text-muted-foreground">{sub}</span>}
+      </div>
     </div>
   );
 }

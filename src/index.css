@@ -16,7 +16,8 @@ p {
   margin: 0;
 }
 
-button {
+button,
+input {
   font: inherit;
 }
 
@@ -78,7 +79,7 @@ header nav button {
 /* two-column layout for New Farm form */
 .two-col {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 2fr 3fr;
   gap: 24px;
   align-items: start;
 }
@@ -179,4 +180,129 @@ header nav button {
 }
 .pl-amber {
   color: #ba7517;
+}
+
+/* FarmingMainPage: no top padding on mobile, 32px on desktop */
+.farming-main {
+  padding-top: 0;
+}
+@media (min-width: 768px) {
+  .farming-main {
+    padding-top: 32px;
+  }
+}
+
+/* FarmDetail: responsive padding */
+.farm-detail-root {
+  padding: 0;
+}
+@media (min-width: 768px) {
+  .farm-detail-root {
+    padding: 32px 80px;
+  }
+}
+
+/* FarmDetail: metrics grid — 2 cols on mobile, 4 on desktop */
+.farm-detail-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  width: 100%;
+}
+@media (min-width: 768px) {
+  .farm-detail-metrics-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* FarmDetail: header body inner padding */
+.farm-detail-header-body {
+  padding: 20px 16px;
+}
+@media (min-width: 768px) {
+  .farm-detail-header-body {
+    padding: 20px 56px;
+  }
+}
+
+/* FarmDetail: tab bar padding */
+.farm-detail-tabs {
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 24px;
+}
+@media (min-width: 768px) {
+  .farm-detail-tabs {
+    padding-left: 56px;
+    padding-right: 56px;
+  }
+}
+
+/* FarmDetail: tab content padding — extra bottom on mobile for NavBottom */
+.farm-detail-content {
+  padding: 24px 16px 100px;
+}
+@media (min-width: 768px) {
+  .farm-detail-content {
+    padding: 24px 56px 40px;
+  }
+}
+
+/* FarmingMainPage: main card — no radius on mobile, 12px on desktop */
+.farming-main-card {
+  border-radius: 0;
+}
+@media (min-width: 768px) {
+  .farming-main-card {
+    border-radius: 12px;
+  }
+}
+
+/* FarmingMainPage: page root centering with responsive side padding */
+.farming-page-root {
+  padding-left: 0;
+  padding-right: 0;
+}
+.farming-subheader {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+.farming-white-body {
+  padding: 24px 16px 40px;
+}
+@media (min-width: 768px) {
+  .farming-page-root {
+    padding-left: 80px;
+    padding-right: 80px;
+  }
+  .farming-subheader {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .farming-white-body {
+    padding: 24px 56px 40px;
+  }
+}
+
+/* Modal form: single column on mobile, 1:2 on desktop */
+.modal-form-grid {
+  grid-template-columns: 1fr;
+}
+.modal-col-right {
+  order: 1;
+}
+@media (min-width: 640px) {
+  .modal-form-grid {
+    grid-template-columns: 1fr 2fr;
+  }
+  .modal-col-right {
+    order: 0;
+    position: sticky;
+    top: 24px;
+  }
+}
+
+/* Normalize Dropdown search input font size to match closed placeholder (text-base = 16px) */
+input.not-italic.bg-transparent[type="text"] {
+  font-size: 1rem !important;
+  line-height: 1.25rem !important;
 }

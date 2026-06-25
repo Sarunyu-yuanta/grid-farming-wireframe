@@ -3,6 +3,7 @@ import {
   NavHeader,
   NavHeaderIconButton,
   NavHeaderAvatarSlot,
+  NavSubHeader,
   YSinvestLogo,
   Avatar,
   PageContainer,
@@ -10,7 +11,7 @@ import {
   YSINVEST_NAV_BOTTOM_ITEMS_TH,
   type NavBottomTabId,
 } from "@sarunyu/system-one";
-import { MagnifyingGlass, ChatCircle } from "@phosphor-icons/react";
+import { MagnifyingGlass, ChatCircle, Bell, Info } from "@phosphor-icons/react";
 import type { AppView, Farm } from "./types";
 import AssetMenuPage from "./components/AssetMenuPage";
 import FarmingMainPage from "./components/FarmingMainPage";
@@ -64,27 +65,30 @@ const DEMO_FARMS: Farm[] = [
   },
 ];
 
-type NavId = "portfolio" | "farming" | "history" | "settings";
+type NavId = "portfolio" | "feed" | "invest" | "farming" | "wallet";
 
 const NAV_ITEMS: { id: NavId; label: string }[] = [
-  { id: "portfolio", label: "พอร์ตฟอลิโอ" },
-  { id: "farming", label: "Farming" },
-  { id: "history", label: "ประวัติ" },
-  { id: "settings", label: "ตั้งค่า" },
+  { id: "portfolio", label: "หน้าหลัก" },
+  { id: "feed",      label: "ฟีด" },
+  { id: "invest",    label: "ลงทุน" },
+  { id: "farming",   label: "สินทรัพย์" },
+  { id: "wallet",    label: "วอลเล็ต" },
 ];
 
 const BOTTOM_TAB_TO_NAV: Partial<Record<NavBottomTabId, NavId>> = {
   home: "portfolio",
-  feed: "history",
-  markets: "farming",
-  wallet: "settings",
+  feed: "feed",
+  markets: "invest",
+  asset: "farming",
+  wallet: "wallet",
 };
 
 const NAV_TO_BOTTOM_TAB: Record<NavId, NavBottomTabId> = {
   portfolio: "home",
+  feed: "feed",
+  invest: "markets",
   farming: "asset",
-  history: "feed",
-  settings: "wallet",
+  wallet: "wallet",
 };
 
 export default function App() {
@@ -95,7 +99,7 @@ export default function App() {
   const [selectedFarmId, setSelectedFarmId] = useState<string | null>(null);
 
   const selectedFarm = farms.find((f) => f.id === selectedFarmId) ?? null;
-  const showBottomNav = view === "asset-menu" || view === "farming";
+  const showBottomNav = view === "asset-menu" || view === "farming" || view === "farm-detail";
 
   function enterGridFarming() {
     setActiveNav("farming");
@@ -109,6 +113,8 @@ export default function App() {
     setBottomTab(NAV_TO_BOTTOM_TAB[id]);
     setSelectedFarmId(null);
     if (id === "farming") {
+      setView("farming");
+    } else if (id === "invest") {
       setView("farming");
     } else {
       setView("asset-menu");
@@ -157,28 +163,85 @@ export default function App() {
   const mainPadding = showBottomNav ? "pb-28 md:pb-8" : "";
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <NavHeader
-        logo={<YSinvestLogo />}
-        items={NAV_ITEMS.map((item) => ({
-          label: item.label,
-          active: activeNav === item.id,
-          onClick: () => setNav(item.id),
-        }))}
-        rightSlot={
-          <>
-            <NavHeaderIconButton aria-label="ค้นหา">
-              <MagnifyingGlass weight="regular" />
-            </NavHeaderIconButton>
-            <NavHeaderIconButton aria-label="แชท">
-              <ChatCircle weight="regular" />
-            </NavHeaderIconButton>
-            <NavHeaderAvatarSlot>
-              <Avatar type="text" initials="SY" size="m" status />
-            </NavHeaderAvatarSlot>
-          </>
-        }
-      />
+    <div className="flex flex-col min-h-screen" style={{ background: "#f9f9f9" }}>
+      {/* Mobile: NavSubHeader on farming pages */}
+      {(view === "farming" || view === "new-farm") && (
+        <div className="block md:hidden">
+          <NavSubHeader
+            title="สร้างการเติบโตของเงินทุน"
+            onBack={() => setView("asset-menu")}
+            rightIcon={<Info size={20} weight="regular" />}
+            rightIconAriaLabel="รายละเอียดแผนการลงทุน"
+          />
+        </div>
+      )}
+
+      {/* Mobile: NavSubHeader on farm-detail page */}
+      {view === "farm-detail" && selectedFarm && (
+        <div className="block md:hidden">
+          <NavSubHeader
+            title={selectedFarm.ticker}
+            onBack={() => { setView("farming"); setSelectedFarmId(null); }}
+            rightIcon={<Info size={20} weight="regular" />}
+            rightIconAriaLabel="รายละเอียดแผนการลงทุน"
+          />
+        </div>
+      )}
+
+      {/* Desktop: always show NavHeader */}
+      <div className={`hidden md:block`}>
+        <NavHeader
+          logo={<YSinvestLogo />}
+          items={NAV_ITEMS.map((item) => ({
+            label: item.label,
+            active: activeNav === item.id,
+            onClick: () => setNav(item.id),
+          }))}
+          rightSlot={
+            <>
+              <NavHeaderIconButton aria-label="ค้นหา">
+                <MagnifyingGlass weight="regular" />
+              </NavHeaderIconButton>
+              <NavHeaderIconButton aria-label="แชท">
+                <ChatCircle weight="regular" />
+              </NavHeaderIconButton>
+              <NavHeaderIconButton aria-label="แจ้งเตือน">
+                <Bell weight="regular" />
+              </NavHeaderIconButton>
+              <NavHeaderAvatarSlot>
+                <Avatar type="text" initials="Y" size="m" status />
+              </NavHeaderAvatarSlot>
+            </>
+          }
+        />
+      </div>
+
+      {/* Mobile: NavHeader on non-farming/farm-detail pages */}
+      {view !== "farming" && view !== "new-farm" && view !== "farm-detail" && (
+        <div className="block md:hidden">
+          <NavHeader
+            logo={<YSinvestLogo />}
+            items={NAV_ITEMS.map((item) => ({
+              label: item.label,
+              active: activeNav === item.id,
+              onClick: () => setNav(item.id),
+            }))}
+            rightSlot={
+              <>
+                <NavHeaderIconButton aria-label="ค้นหา">
+                  <MagnifyingGlass weight="regular" />
+                </NavHeaderIconButton>
+                <NavHeaderIconButton aria-label="แจ้งเตือน">
+                  <Bell weight="regular" />
+                </NavHeaderIconButton>
+                <NavHeaderAvatarSlot>
+                  <Avatar type="text" initials="Y" size="m" status />
+                </NavHeaderAvatarSlot>
+              </>
+            }
+          />
+        </div>
+      )}
 
       {view === "asset-menu" && (
         <PageContainer as="main" className={`flex-1 py-8 ${mainPadding}`}>
@@ -186,28 +249,45 @@ export default function App() {
         </PageContainer>
       )}
 
-      {view === "farming" && (
-        <PageContainer as="main" className={`flex-1 py-8 ${mainPadding}`}>
+      {(view === "farming" || view === "new-farm") && (
+        <main
+          className={`flex-1 farming-main ${mainPadding}`}
+          style={{ paddingBottom: "32px", paddingLeft: 0, paddingRight: 0 }}
+        >
           <FarmingMainPage
             farms={farms}
             selectedFarmId={selectedFarmId}
             onSelectFarm={handleSelectFarm}
             onAddFarm={() => setView("new-farm")}
+            onBack={() => setView("asset-menu")}
           />
-        </PageContainer>
+        </main>
       )}
 
       {view === "new-farm" && (
-        <NewFarmForm
-          onCancel={() => setView("farming")}
-          onSubmit={handleAddFarm}
-        />
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ background: "rgba(0,0,0,0.45)" }}
+          onClick={() => setView("farming")}
+        >
+          <div
+            className="relative bg-background shadow-xl"
+            style={{ width: "min(1100px, 95vw)", maxHeight: "92vh", borderRadius: "16px", overflowY: "auto", scrollbarWidth: "none" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <NewFarmForm
+              isModal
+              onCancel={() => setView("farming")}
+              onSubmit={handleAddFarm}
+            />
+          </div>
+        </div>
       )}
 
       {view === "farm-detail" && selectedFarm && (
         <FarmDetail
           farm={selectedFarm}
-          onBack={() => setView("farming")}
+          onBack={() => { setView("farming"); setSelectedFarmId(null); }}
           onUpdate={handleUpdateFarm}
           onClose={handleCloseFarm}
         />

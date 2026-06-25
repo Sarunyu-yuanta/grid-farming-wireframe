@@ -267,7 +267,6 @@ function FarmSection({
 
 function FarmCard({
   farm,
-  selected,
   onClick,
 }: {
   farm: Farm;

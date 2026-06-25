@@ -144,7 +144,7 @@ export default function FarmDetail({ farm, onBack, onUpdate, onClose }: Props) {
 
             {/* Alert (out-of-range) – padded */}
             {outOfRange && (
-              <div style={{ padding: "16px 56px 0" }}>
+              <div className="farm-detail-alert">
                 <Alert
                   status="warning"
                   title="ราคาออกนอก Grid Range"

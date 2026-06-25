@@ -224,6 +224,16 @@ header nav button {
   }
 }
 
+/* FarmDetail: alert padding */
+.farm-detail-alert {
+  padding: 16px 16px 0;
+}
+@media (min-width: 768px) {
+  .farm-detail-alert {
+    padding: 16px 56px 0;
+  }
+}
+
 /* FarmDetail: tab bar padding */
 .farm-detail-tabs {
   padding-left: 16px;

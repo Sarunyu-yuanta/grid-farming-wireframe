@@ -70,6 +70,8 @@ export default function FarmModify({ farm, onUpdate, onClose }: Props) {
 
   const diff = newNeedInvestment - farm.capital;
   const gridLevels = hasValidRange ? calcGridLevelCount(numMin, numMax, numSpread) : 0;
+  const originalGridLevels = calcGridLevelCount(farm.priceMin, farm.priceMax, farm.spread);
+  const gridLevelsDecreased = gridLevels > 0 && gridLevels < originalGridLevels;
 
   const estimatedPL = calcPL(farm);
   const plPositive = estimatedPL >= 0;
@@ -220,9 +222,19 @@ export default function FarmModify({ farm, onUpdate, onClose }: Props) {
                 {gridLevels > 0 && (
                   <p className="type-caption text-muted-foreground">
                     Grid Levels ใหม่: {gridLevels} ระดับ
+                    {gridLevelsDecreased && (
+                      <span className="pl-amber"> (ลดลงจาก {originalGridLevels} ระดับ)</span>
+                    )}
                   </p>
                 )}
             </div>
+          )}
+
+          {gridLevelsDecreased && (
+            <Alert
+              status="warning"
+              message={`Grid Levels ลดลงจาก ${originalGridLevels} เป็น ${gridLevels} ระดับ — ระบบอาจต้องขายหุ้นส่วนเกินออกก่อนดำเนินการ กรุณาตรวจสอบพอร์ตก่อนยืนยัน`}
+            />
           )}
 
           <Checkbox

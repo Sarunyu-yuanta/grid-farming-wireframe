@@ -1,5 +1,5 @@
-import { Button, Card, StatusTag, Tag } from "@sarunyu/system-one";
-import { Plant, Plus, Clock, Info, EyeSlash, ArrowLeft } from "@phosphor-icons/react";
+import { Button, Card } from "@sarunyu/system-one";
+import { Plant, Plus, Info, EyeSlash, ArrowLeft } from "@phosphor-icons/react";
 import type { Farm } from "../types";
 import { calcPL, calcMarketValue, formatCurrency, formatNumber } from "../utils";
 
@@ -197,14 +197,26 @@ export default function FarmingMainPage({
           {farms.length === 0 ? (
             <EmptyState onAddFarm={onAddFarm} />
           ) : (
-            <>
+            <div className="flex flex-col gap-4 w-full">
+              <div className="flex items-center justify-between">
+                <span className="type-body-2 text-muted-foreground">
+                  ฟาร์มทั้งหมด {farms.length} ฟาร์ม
+                </span>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  leftIcon={<Plus size={14} weight="bold" />}
+                  onClick={onAddFarm}
+                >
+                  เพิ่มฟาร์ม
+                </Button>
+              </div>
               {activeFarms.length > 0 && (
                 <FarmSection
                   title={`กำลังทำงาน (${activeFarms.length})`}
                   farms={activeFarms}
                   selectedFarmId={selectedFarmId}
                   onSelectFarm={onSelectFarm}
-                  onAddFarm={onAddFarm}
                 />
               )}
               {closedFarms.length > 0 && (
@@ -215,7 +227,7 @@ export default function FarmingMainPage({
                   onSelectFarm={onSelectFarm}
                 />
               )}
-            </>
+            </div>
           )}
         </div>
       </div>
@@ -228,32 +240,28 @@ function FarmSection({
   farms,
   selectedFarmId,
   onSelectFarm,
-  onAddFarm,
 }: {
   title: string;
   farms: Farm[];
   selectedFarmId: string | null;
   onSelectFarm: (id: string) => void;
-  onAddFarm?: () => void;
 }) {
   return (
-    <div className="flex flex-col gap-4 w-full">
-      <div className="flex items-center justify-between w-full">
-        <h2 className="type-subtitle-1 text-foreground">{title}</h2>
-        {onAddFarm && (
-          <Button
-            variant="primary"
-            size="sm"
-            leftIcon={<Plus size={14} weight="bold" />}
-            onClick={onAddFarm}
-          >
-            เริ่มฟาร์ม
-          </Button>
-        )}
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="flex flex-col gap-2 w-full">
+      <h2
+        style={{
+          fontSize: "11px",
+          fontWeight: 700,
+          letterSpacing: "0.07em",
+          textTransform: "uppercase",
+          color: "#8a91a8",
+        }}
+      >
+        {title}
+      </h2>
+      <div className="farm-chips">
         {farms.map((farm) => (
-          <FarmCard
+          <FarmChip
             key={farm.id}
             farm={farm}
             selected={farm.id === selectedFarmId}
@@ -265,108 +273,34 @@ function FarmSection({
   );
 }
 
-function FarmCard({
+function FarmChip({
   farm,
+  selected,
   onClick,
 }: {
   farm: Farm;
   selected: boolean;
   onClick: () => void;
 }) {
-  const pl = calcPL(farm);
-  const plPct = farm.capital > 0 ? (pl / farm.capital) * 100 : 0;
-  const plPositive = pl >= 0;
   const outOfRange =
     farm.marketPrice < farm.priceMin || farm.marketPrice > farm.priceMax;
-  const inRange = !outOfRange;
-
-  const rangeSize = farm.priceMax - farm.priceMin;
-  const pricePosition =
-    rangeSize > 0
-      ? Math.max(0, Math.min(1, (farm.marketPrice - farm.priceMin) / rangeSize))
-      : 0;
-
-  const runtimeDays = Math.floor(
-    (Date.now() - farm.createdAt.getTime()) / (1000 * 60 * 60 * 24)
-  );
-
-  const statusType =
-    outOfRange && farm.status === "active"
-      ? "hold"
-      : farm.status === "active"
-        ? "success"
-        : "stop";
-
-  const statusText =
-    outOfRange && farm.status === "active"
-      ? "นอกช่วงราคา"
-      : farm.status === "active"
-        ? "กำลังทำงาน"
-        : "ปิดแล้ว";
+  const dotColor =
+    farm.status === "closed"
+      ? "#9ca3af"
+      : outOfRange
+        ? "#ba7517"
+        : "#0f6e56";
 
   return (
-    <div
-      role="button"
-      tabIndex={0}
+    <button
+      className={`farm-chip-btn${selected ? " farm-chip-btn--selected" : ""}`}
       onClick={onClick}
-      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onClick(); }}
+      aria-label={`ฟาร์ม ${farm.ticker}`}
+      aria-pressed={selected}
     >
-      <Card size="desktop" className="farm-card">
-        <div className="flex flex-col gap-3">
-          {/* Top row: ticker + status / PnL% + market price */}
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex flex-col gap-1.5">
-              <div className="flex items-center gap-2">
-                <span className="type-h6 text-foreground">{farm.ticker}</span>
-                <Tag text="Spot Grid" variant="gray" size="small" />
-              </div>
-              <StatusTag type={statusType} text={statusText} />
-            </div>
-            <div className="flex flex-col items-end gap-1">
-              <Tag
-                text={`${plPositive ? "▲" : "▼"} ${plPositive ? "+" : ""}${formatNumber(plPct, 2)}%`}
-                variant={plPositive ? "green" : "red"}
-                size="small"
-              />
-              <span className="type-caption text-muted-foreground">
-                ฿{formatNumber(farm.marketPrice)}
-              </span>
-            </div>
-          </div>
-
-          {/* P/L absolute */}
-          <div className="flex flex-col gap-0.5">
-            <span className="type-caption text-muted-foreground">กำไร/ขาดทุน</span>
-            <span className={`type-subtitle-1 font-bold ${plPositive ? "pl-positive" : "pl-negative"}`}>
-              {plPositive ? "+" : ""}{formatCurrency(pl)}
-            </span>
-          </div>
-
-          {/* Mini grid range bar */}
-          <div className="flex flex-col gap-1">
-            <div className="grid-range-bar relative h-1 rounded-full overflow-visible">
-              <div
-                className={`absolute top-1/2 -translate-y-1/2 w-0.5 h-3.5 rounded-full ${inRange ? "bg-primary-action" : "bg-destructive"}`}
-                style={{ left: `calc(${pricePosition * 100}% - 1px)` }}
-              />
-            </div>
-            <div className="flex justify-between type-caption text-muted-foreground">
-              <span>฿{formatNumber(farm.priceMin)}</span>
-              <span>฿{formatNumber(farm.priceMax)}</span>
-            </div>
-          </div>
-
-          {/* Bottom: runtime + capital */}
-          <div className="border-t border-divider pt-2.5 flex justify-between type-caption">
-            <span className="text-muted-foreground flex items-center gap-1">
-              <Clock size={12} />
-              {runtimeDays === 0 ? "วันนี้" : `${runtimeDays} วัน`}
-            </span>
-            <span className="text-muted-foreground">{formatCurrency(farm.capital)}</span>
-          </div>
-        </div>
-      </Card>
-    </div>
+      <span className="farm-chip-dot" style={{ background: dotColor }} />
+      <span>{farm.ticker}</span>
+    </button>
   );
 }
 

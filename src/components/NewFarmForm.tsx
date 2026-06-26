@@ -123,6 +123,7 @@ export default function NewFarmForm({ onCancel, onSubmit, initialConfig, isModal
     : null;
 
   const capitalWarning = needInvestment > 0 && capital > 0 && capital < needInvestment;
+  const highInvestmentWarning = needInvestment > 500000;
   const canSubmit = valid && consent;
 
   function set<K extends keyof FarmConfig>(key: K, value: FarmConfig[K]) {
@@ -313,6 +314,13 @@ export default function NewFarmForm({ onCancel, onSubmit, initialConfig, isModal
                   <Alert
                     status="critical"
                     message="เงินลงทุนต่ำกว่าที่ต้องการ — อาจมีความเสี่ยงสูง กรุณาเพิ่มเงินหรือปรับ Config"
+                  />
+                )}
+
+                {highInvestmentWarning && (
+                  <Alert
+                    status="critical"
+                    message="เงินลงทุนต่ำกว่า ฿500,000 อาจมีความเสี่ยงสูง"
                   />
                 )}
 

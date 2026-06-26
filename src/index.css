@@ -316,3 +316,74 @@ input.not-italic.bg-transparent[type="text"] {
   font-size: 1rem !important;
   line-height: 1.25rem !important;
 }
+
+/* ── Touch targets — minimum 44×44px for icon-only buttons (spec §6) ── */
+button[aria-label],
+[role="button"][aria-label] {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* ── Farm chip buttons (spec §4.1) ── */
+.farm-chip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  min-height: 44px;
+  border-radius: 999px;
+  border: 1.5px solid #e5e7eb;
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #101828;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-family: inherit;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.farm-chip-btn:hover {
+  border-color: #185fa5;
+  background: rgba(24, 95, 165, 0.05);
+}
+
+.farm-chip-btn:focus-visible {
+  outline: 2px solid #185fa5;
+  outline-offset: 2px;
+}
+
+.farm-chip-btn--selected {
+  border-color: #185fa5;
+  background: rgba(24, 95, 165, 0.09);
+  color: #185fa5;
+}
+
+.farm-chip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Loading spinner (spec §6 Loading State) ── */
+.loading-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(24, 95, 165, 0.18);
+  border-top-color: #185fa5;
+  border-radius: 50%;
+  animation: loading-spin 0.7s linear infinite;
+}
+
+@keyframes loading-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-spinner {
+    animation: none;
+    opacity: 0.5;
+  }
+}

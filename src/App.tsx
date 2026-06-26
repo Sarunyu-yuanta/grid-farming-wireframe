@@ -97,6 +97,7 @@ export default function App() {
   const [view, setView] = useState<AppView>("asset-menu");
   const [farms, setFarms] = useState<Farm[]>(DEMO_FARMS);
   const [selectedFarmId, setSelectedFarmId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const selectedFarm = farms.find((f) => f.id === selectedFarmId) ?? null;
   const showBottomNav = view === "asset-menu" || view === "farming" || view === "farm-detail";
@@ -140,7 +141,12 @@ export default function App() {
     setSelectedFarmId(farm.id);
     setActiveNav("farming");
     setBottomTab("asset");
-    setView("farm-detail");
+    setView("farming"); // close modal first
+    setIsLoading(true);
+    setTimeout(() => {
+      setView("farm-detail");
+      setIsLoading(false);
+    }, 700);
   }
 
   function handleUpdateFarm(updated: Farm) {
@@ -157,7 +163,11 @@ export default function App() {
 
   function handleSelectFarm(id: string) {
     setSelectedFarmId(id);
-    setView("farm-detail");
+    setIsLoading(true);
+    setTimeout(() => {
+      setView("farm-detail");
+      setIsLoading(false);
+    }, 600);
   }
 
   const mainPadding = showBottomNav ? "pb-28 md:pb-8" : "";
@@ -300,6 +310,18 @@ export default function App() {
           items={YSINVEST_NAV_BOTTOM_ITEMS_TH}
           className="md:hidden"
         />
+      )}
+
+      {isLoading && (
+        <div
+          className="fixed inset-0 z-[200] flex flex-col items-center justify-center gap-3"
+          style={{ background: "rgba(255,255,255,0.82)", backdropFilter: "blur(2px)" }}
+          role="status"
+          aria-label="กำลังโหลด"
+        >
+          <div className="loading-spinner" />
+          <span style={{ fontSize: "13px", color: "#5f5e5a" }}>กำลังโหลด...</span>
+        </div>
       )}
     </div>
   );
